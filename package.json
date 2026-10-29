@@ -1,0 +1,14 @@
+{
+  "name": "@collectivetrait/lineaui-html-converter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Converts visual designs into pixel-perfect Linea UI implementations.",
+  "dependencies": {
+    "@collectivetrait/lineaui": "file:../ln",
+    "@collectivetrait/lineaui-reference": "file:../ln-reference",
+    "sass": "^1.80.0"
+  },
+  "scripts": {
+    "compile": "npx sass styles.scss styles.css --no-source-map"
+  }
+}
