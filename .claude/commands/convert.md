@@ -242,6 +242,21 @@ If browser tools are available, open both the input and `index.html` side by sid
 
 Fix any discrepancies by adjusting classes or custom SCSS, then recompile.
 
+## Score the output
+
+Run the quality scoring pipeline:
+
+```bash
+node evals/scoring/score-card.mjs . $ARGUMENTS
+```
+
+Read `score-card.json` and review the per-dimension scores. If any dimension scores below 0.7, review the output and fix before reporting:
+- **Semantic < 0.7**: check landmark elements and heading hierarchy
+- **Coverage < 0.7**: check for utility-only compositions that should use library blocks
+- **CSS Ratio < 0.7**: check naming conventions and whether custom CSS duplicates library functionality
+
+After fixing, recompile and re-score until all available dimensions are at 0.7 or above.
+
 ## Completion
 
 Report to the user:
@@ -249,5 +264,6 @@ Report to the user:
 2. Which mode was used (coordinator with N workers, or single-agent)
 3. Which Linea UI blocks were used and why
 4. Any custom classes that were added, with brief justification for each
-5. Any areas where the library couldn't match the design exactly
-6. How to view the result: open `index.html` in a browser
+5. Quality scores (per-dimension and overall from score-card.json)
+6. Any areas where the library couldn't match the design exactly
+7. How to view the result: open `index.html` in a browser

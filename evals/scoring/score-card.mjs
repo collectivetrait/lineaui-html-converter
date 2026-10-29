@@ -52,7 +52,8 @@ export async function generateScoreCard(inputPath, outputDir, options = {}) {
   return card;
 }
 
-if (import.meta.url === `file://${resolve(process.argv[1])}`) {
+const isMain = process.argv[1] && import.meta.url === new URL(`file://${resolve(process.argv[1])}`).href;
+if (isMain) {
   const outputDir = process.argv[2] || '.';
   const inputPath = process.argv[3] || 'input/source.html';
 
