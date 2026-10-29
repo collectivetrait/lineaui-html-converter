@@ -70,7 +70,122 @@ For elements that don't map to any library block, or whose appearance can't be f
 - If you have zero custom classes on a non-trivial page, you likely missed something or took shortcuts
 - If you have many custom classes, check `classes.md` again — the library probably has a block for it
 
-## Phase 2: Implementation
+## Dispatch decision
+
+After analysis, decide whether to use parallel workers or implement directly:
+
+- **4 or more top-level semantic regions** → use coordinator mode (dispatch section workers)
+- **3 or fewer regions** → implement directly (single-agent mode, skip to Phase 2)
+
+---
+
+## Coordinator mode (parallel dispatch)
+
+Use this path when the page has 4+ regions.
+
+### 1. Prepare section briefs
+
+Group the regions into up to 3 batches (e.g. "header + navbar", "main content sections", "footer"). For each batch, create a brief file at `.converter-tmp/section-{n}-brief.md` following this structure:
+
+```markdown
+# Section Brief: {section_name}
+
+## Region
+{description of the semantic region(s) this section covers}
+
+## HTML structure
+- Root element: `<{element}>`
+- Heading level: `<h{n}>` for the section title (if applicable)
+
+## Linea UI blocks
+{list of blocks to use, from your analysis step 3}
+
+## Shared patterns
+{decisions that apply across ALL sections — workers must follow these exactly}
+
+## Custom classes
+{pre-assigned custom class names for this section — workers use these, don't invent new ones}
+
+## Content
+{the actual text, images, and links to preserve from the input}
+```
+
+**Critical:** The coordinator decides ALL heading levels, ALL custom class names, and ALL shared pattern choices upfront. Workers execute, they don't decide.
+
+### 2. Dispatch workers
+
+Create the temp directory and dispatch up to 3 `section-worker` agents **in parallel** (all Agent calls in one message):
+
+```bash
+mkdir -p .converter-tmp
+```
+
+Each agent's prompt must include:
+- Brief file path: `.converter-tmp/section-{n}-brief.md`
+- HTML output path: `.converter-tmp/section-{n}.html`
+- SCSS output path: `.converter-tmp/section-{n}.scss`
+
+### 3. Review fragments
+
+After all workers complete, read each fragment and check:
+
+1. **Heading hierarchy** — scan all HTML fragments in section order for `<h1>`–`<h6>`. Verify no skipped levels, exactly one `<h1>`, and logical nesting. Fix heading levels in the fragments if needed.
+
+2. **Custom class deduplication** — collect all class names from the SCSS fragments. If two workers defined the same class with different rules, merge or rename.
+
+3. **Pattern consistency** — verify each fragment used the blocks and modifiers specified in its brief. If a worker deviated (used `ln-list` when the brief said `ln-card`), correct the fragment.
+
+4. **HTML validity** — check for unclosed tags, orphaned BEM elements (element class without block parent). Fix in place.
+
+5. **Worker failure** — if a fragment file is missing or empty, implement that section yourself using the brief.
+
+### 4. Merge and build
+
+1. **Assemble `index.html`:**
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>{page title from input}</title>
+     <link rel="stylesheet" href="styles.css">
+   </head>
+   <body>
+     {section-1.html content}
+     {section-2.html content}
+     {section-3.html content}
+     <script src="main.js"></script> <!-- only if needed -->
+   </body>
+   </html>
+   ```
+
+2. **Assemble `custom.scss`:** concatenate all SCSS fragments with a section comment between each:
+   ```scss
+   // --- Section 1: {name} ---
+   {section-1.scss content}
+
+   // --- Section 2: {name} ---
+   {section-2.scss content}
+   ```
+
+3. **Create `styles.scss`:**
+   ```scss
+   @use 'node_modules/@collectivetrait/lineaui/scss' as *;
+   @use 'custom';
+   ```
+
+4. **Compile:** run `npm run compile`. Fix any SCSS errors and retry.
+
+5. **Clean up:** remove `.converter-tmp/` directory.
+
+Then skip to the Visual comparison step below.
+
+---
+
+## Single-agent mode (direct implementation)
+
+Use this path when the page has 3 or fewer regions, or as fallback for any section a worker failed on.
 
 ### 1. Build the HTML
 
@@ -99,8 +214,6 @@ Create `styles.scss` in the project root:
 @use 'custom';
 ```
 
-This compiles the full library from SCSS source together with the custom styles into a single `styles.css`.
-
 ### 4. Compile
 
 Run:
@@ -114,7 +227,9 @@ If compilation fails, fix the SCSS errors and retry until it succeeds.
 
 If the input has interactive behavior (dropdowns, modals, tabs, accordions, mobile navigation), create `main.js` in the project root with the minimal JavaScript needed. Use the library's `data-ln-*` attributes and initialization patterns where they exist.
 
-### 6. Visual comparison
+---
+
+## Visual comparison
 
 If browser tools are available, open both the input and `index.html` side by side. Compare:
 - Layout structure and alignment
@@ -129,7 +244,8 @@ Fix any discrepancies by adjusting classes or custom SCSS, then recompile.
 
 Report to the user:
 1. What files were created
-2. Which Linea UI blocks were used and why
-3. Any custom classes that were added, with brief justification for each
-4. Any areas where the library couldn't match the design exactly
-5. How to view the result: open `index.html` in a browser
+2. Which mode was used (coordinator with N workers, or single-agent)
+3. Which Linea UI blocks were used and why
+4. Any custom classes that were added, with brief justification for each
+5. Any areas where the library couldn't match the design exactly
+6. How to view the result: open `index.html` in a browser
