@@ -1,8 +1,8 @@
 # Section Brief: {section_name}
 
-## Region
+## Region(s)
 
-{description of the semantic region(s) this section covers — what it looks like visually and what role it serves on the page}
+{description of the semantic region(s) this section covers — what it looks like visually and what role it serves on the page. A batch may include multiple adjacent regions.}
 
 ## HTML structure
 

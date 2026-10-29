@@ -129,7 +129,7 @@ Each agent's prompt must include:
 
 After all workers complete, read each fragment and check:
 
-1. **Heading hierarchy** — scan all HTML fragments in section order for `<h1>`–`<h6>`. Verify no skipped levels, exactly one `<h1>`, and logical nesting. Fix heading levels in the fragments if needed.
+1. **Heading hierarchy** — scan all HTML fragments in section order for `<h1>`–`<h6>`. Verify no skipped levels, exactly one `<h1>`, and logical nesting. Fix heading levels in the fragments if needed and note any changes in the completion report.
 
 2. **Custom class deduplication** — collect all class names from the SCSS fragments. If two workers defined the same class with different rules, merge or rename.
 
@@ -177,7 +177,9 @@ After all workers complete, read each fragment and check:
 
 4. **Compile:** run `npm run compile`. Fix any SCSS errors and retry.
 
-5. **Clean up:** remove `.converter-tmp/` directory.
+5. **Create JS if needed:** if the input has interactive behavior (dropdowns, modals, tabs, accordions, mobile navigation), create `main.js` in the project root. Workers don't handle JS — this is the coordinator's responsibility.
+
+6. **Clean up:** remove `.converter-tmp/` directory.
 
 Then skip to the Visual comparison step below.
 

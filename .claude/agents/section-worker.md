@@ -1,7 +1,7 @@
 ---
 name: section-worker
 description: Implements one section of an HTML page using Linea UI classes. Receives a section brief with the visual description, assigned semantic elements, library block mappings, and shared pattern decisions. Writes HTML and SCSS fragments to assigned file paths.
-tools: Read, Write, Bash
+tools: Read, Write
 model: inherit
 ---
 
