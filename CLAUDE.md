@@ -40,4 +40,4 @@ Generated files live in the project root:
 
 ## SCSS compilation
 
-Run `npm run compile` to build styles.css from styles.scss.
+Run `npm run compile` to build styles.css from custom.scss.
