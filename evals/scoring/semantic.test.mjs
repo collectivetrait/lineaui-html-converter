@@ -25,6 +25,7 @@ test('scores landmarks — all present', async () => {
   const path = writeHtml('landmarks.html', `
     <header><nav>Nav</nav></header>
     <main><section><h2>Content</h2></section></main>
+    <aside>Sidebar</aside>
     <footer>Footer</footer>
   `);
   const result = await scoreSemantics(path);
@@ -101,6 +102,22 @@ test('detects anchor used as button', async () => {
   teardown();
 });
 
+test('detects missing form labels', async () => {
+  setup();
+  const path = writeHtml('form-labels.html', `
+    <main>
+      <input type="text" id="name">
+      <label for="name">Name</label>
+      <input type="email">
+      <select><option>Pick</option></select>
+    </main>
+  `);
+  const result = await scoreSemantics(path);
+  assert.strictEqual(result.forms.missingLabel, 2);
+  assert.ok(result.forms.score < 1.0);
+  teardown();
+});
+
 test('overall is average of sub-scores', async () => {
   setup();
   const path = writeHtml('full.html', `
@@ -113,8 +130,9 @@ test('overall is average of sub-scores', async () => {
     result.landmarks.score +
     result.headings.score +
     result.interactiveElements.score +
-    result.images.score
-  ) / 4;
+    result.images.score +
+    result.forms.score
+  ) / 5;
   assert.strictEqual(result.overall, parseFloat(expected.toFixed(2)));
   teardown();
 });

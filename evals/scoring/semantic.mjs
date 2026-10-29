@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-const EXPECTED_LANDMARKS = ['header', 'main', 'footer', 'nav'];
+const EXPECTED_LANDMARKS = ['header', 'main', 'footer', 'nav', 'section', 'aside'];
 const ACTION_WORDS = /\b(delete|remove|close|cancel|submit|save|edit|toggle|dismiss)\b/i;
 
 export async function scoreSemantics(htmlPath) {
@@ -10,8 +10,9 @@ export async function scoreSemantics(htmlPath) {
   const headings = scoreHeadings(html);
   const interactiveElements = scoreInteractive(html);
   const images = scoreImages(html);
+  const forms = scoreForms(html);
 
-  const subScores = [landmarks.score, headings.score, interactiveElements.score, images.score];
+  const subScores = [landmarks.score, headings.score, interactiveElements.score, images.score, forms.score];
   const overall = parseFloat((subScores.reduce((a, b) => a + b, 0) / subScores.length).toFixed(2));
 
   return {
@@ -20,6 +21,7 @@ export async function scoreSemantics(htmlPath) {
     headings,
     interactiveElements,
     images,
+    forms,
     overall,
   };
 }
@@ -77,6 +79,27 @@ function scoreInteractive(html) {
 
   const score = issues.length === 0 ? 1.0 : Math.max(0, 1.0 - issues.length * 0.2);
   return { issues, score };
+}
+
+function scoreForms(html) {
+  const inputs = [...html.matchAll(/<(input|select|textarea)[\s>][^>]*>/gi)];
+  const total = inputs.length;
+  let missingLabel = 0;
+
+  for (const input of inputs) {
+    const tag = input[0];
+    if (/type=["']hidden["']/i.test(tag)) continue;
+    const hasAriaLabel = /aria-label\s*=/i.test(tag);
+    const hasId = /\bid=["']([^"']+)["']/i.exec(tag);
+    const idLinked = hasId && new RegExp(`<label[^>]*\\bfor=["']${hasId[1]}["']`, 'i').test(html);
+    if (!hasAriaLabel && !idLinked) {
+      missingLabel++;
+    }
+  }
+
+  const countable = inputs.filter(i => !/type=["']hidden["']/i.test(i[0])).length;
+  const score = countable === 0 ? 1.0 : parseFloat(((countable - missingLabel) / countable).toFixed(2));
+  return { total: countable, missingLabel, score };
 }
 
 function scoreImages(html) {
