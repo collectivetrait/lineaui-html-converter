@@ -76,8 +76,7 @@ For elements that don't map to any library block, or whose appearance can't be f
 
 Create `index.html` in the project root with:
 - `<!DOCTYPE html>`, charset meta, viewport meta
-- `<link rel="stylesheet" href="node_modules/@collectivetrait/lineaui/dist/styles.css">` in the head (library styles)
-- `<link rel="stylesheet" href="styles.css">` in the head (custom styles, loaded second so they can override)
+- `<link rel="stylesheet" href="styles.css">` in the head (single compiled stylesheet)
 - Semantic structure following your analysis
 - Linea UI classes from `classes.md`
 - Content preserved from the input
@@ -92,7 +91,17 @@ Create `custom.scss` in the project root:
   // No custom styles needed — all visual patterns covered by Linea UI classes.
   ```
 
-### 3. Compile
+### 3. Create the import file
+
+Create `styles.scss` in the project root:
+```scss
+@use 'node_modules/@collectivetrait/lineaui/scss' as *;
+@use 'custom';
+```
+
+This compiles the full library from SCSS source together with the custom styles into a single `styles.css`.
+
+### 4. Compile
 
 Run:
 ```bash
@@ -101,11 +110,11 @@ npm run compile
 
 If compilation fails, fix the SCSS errors and retry until it succeeds.
 
-### 4. Create JS if needed
+### 5. Create JS if needed
 
 If the input has interactive behavior (dropdowns, modals, tabs, accordions, mobile navigation), create `main.js` in the project root with the minimal JavaScript needed. Use the library's `data-ln-*` attributes and initialization patterns where they exist.
 
-### 5. Visual comparison
+### 6. Visual comparison
 
 If browser tools are available, open both the input and `index.html` side by side. Compare:
 - Layout structure and alignment

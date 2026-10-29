@@ -9,6 +9,6 @@
     "sass": "^1.80.0"
   },
   "scripts": {
-    "compile": "npx sass custom.scss styles.css --no-source-map"
+    "compile": "npx sass styles.scss styles.css --no-source-map"
   }
 }

@@ -13,9 +13,10 @@ data about Linea UI.
 ## Output conventions
 
 Generated files live in the project root:
-- `index.html` — semantic HTML with Linea UI classes (links to both library CSS and styles.css)
+- `index.html` — semantic HTML with Linea UI classes (links to styles.css)
 - `custom.scss` — custom styles for gaps the library can't cover
-- `styles.css` — compiled from custom.scss (do not edit directly)
+- `styles.scss` — imports Linea UI SCSS source and custom styles
+- `styles.css` — compiled from styles.scss (do not edit directly)
 - `main.js` — optional, only when interactions are needed
 - `assets/` — static files (images, fonts) referenced by the HTML
 
@@ -40,4 +41,4 @@ Generated files live in the project root:
 
 ## SCSS compilation
 
-Run `npm run compile` to build styles.css from custom.scss.
+Run `npm run compile` to build styles.css from styles.scss (which imports both Linea UI and custom.scss).
