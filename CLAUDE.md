@@ -13,10 +13,9 @@ data about Linea UI.
 ## Output conventions
 
 Generated files live in the project root:
-- `index.html` — semantic HTML with Linea UI classes
+- `index.html` — semantic HTML with Linea UI classes (links to both library CSS and styles.css)
 - `custom.scss` — custom styles for gaps the library can't cover
-- `styles.scss` — imports Linea UI and custom styles
-- `styles.css` — compiled from styles.scss (do not edit directly)
+- `styles.css` — compiled from custom.scss (do not edit directly)
 - `main.js` — optional, only when interactions are needed
 - `assets/` — static files (images, fonts) referenced by the HTML
 
