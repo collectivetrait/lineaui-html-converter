@@ -149,18 +149,18 @@ After all workers complete, read each fragment and check:
      <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <title>{page title from input}</title>
-     <link rel="stylesheet" href="styles.css">
+     <link rel="stylesheet" href="assets/styles/styles.css">
    </head>
    <body>
      {section-1.html content}
      {section-2.html content}
      {section-3.html content}
-     <script src="main.js"></script> <!-- only if needed -->
+     <script src="assets/scripts/main.js"></script> <!-- only if needed -->
    </body>
    </html>
    ```
 
-2. **Assemble `custom.scss`:** concatenate all SCSS fragments with a section comment between each:
+2. **Assemble `assets/styles/custom.scss`:** concatenate all SCSS fragments with a section comment between each:
    ```scss
    // --- Section 1: {name} ---
    {section-1.scss content}
@@ -169,15 +169,15 @@ After all workers complete, read each fragment and check:
    {section-2.scss content}
    ```
 
-3. **Create `styles.scss`:**
+3. **Create `assets/styles/styles.scss`:**
    ```scss
-   @use 'node_modules/@collectivetrait/lineaui/scss' as *;
+   @use '../../node_modules/@collectivetrait/lineaui/scss' as *;
    @use 'custom';
    ```
 
 4. **Compile:** run `npm run compile`. Fix any SCSS errors and retry.
 
-5. **Create JS if needed:** if the input has interactive behavior (dropdowns, modals, tabs, accordions, mobile navigation), create `main.js` in the project root. Workers don't handle JS — this is the coordinator's responsibility.
+5. **Create JS if needed:** if the input has interactive behavior (dropdowns, modals, tabs, accordions, mobile navigation), create `assets/scripts/main.js`. Workers don't handle JS — this is the coordinator's responsibility.
 
 6. **Clean up:** remove `.converter-tmp/` directory.
 
@@ -193,15 +193,15 @@ Use this path when the page has 3 or fewer regions, or as fallback for any secti
 
 Create `index.html` in the project root with:
 - `<!DOCTYPE html>`, charset meta, viewport meta
-- `<link rel="stylesheet" href="styles.css">` in the head (single compiled stylesheet)
+- `<link rel="stylesheet" href="assets/styles/styles.css">` in the head
 - Semantic structure following your analysis
 - Linea UI classes from `classes.md`
 - Content preserved from the input
-- `<script src="main.js"></script>` before `</body>` only if interactions are needed
+- `<script src="assets/scripts/main.js"></script>` before `</body>` only if interactions are needed
 
 ### 2. Write custom SCSS
 
-Create `custom.scss` in the project root:
+Create `assets/styles/custom.scss`:
 - If custom styles are needed, define them using Linea UI tokens for all values
 - If no custom CSS is needed, write the file with a comment explaining why:
   ```scss
@@ -210,9 +210,9 @@ Create `custom.scss` in the project root:
 
 ### 3. Create the import file
 
-Create `styles.scss` in the project root:
+Create `assets/styles/styles.scss`:
 ```scss
-@use 'node_modules/@collectivetrait/lineaui/scss' as *;
+@use '../../node_modules/@collectivetrait/lineaui/scss' as *;
 @use 'custom';
 ```
 
@@ -227,7 +227,7 @@ If compilation fails, fix the SCSS errors and retry until it succeeds.
 
 ### 5. Create JS if needed
 
-If the input has interactive behavior (dropdowns, modals, tabs, accordions, mobile navigation), create `main.js` in the project root with the minimal JavaScript needed. Use the library's `data-ln-*` attributes and initialization patterns where they exist.
+If the input has interactive behavior (dropdowns, modals, tabs, accordions, mobile navigation), create `assets/scripts/main.js` with the minimal JavaScript needed. Use the library's `data-ln-*` attributes and initialization patterns where they exist.
 
 ---
 
@@ -240,7 +240,7 @@ If browser tools are available, open both the input and `index.html` side by sid
 - Spacing and gaps
 - Component appearance
 
-Fix any discrepancies by adjusting classes or custom SCSS, then recompile.
+Fix any discrepancies by adjusting classes or custom SCSS in `assets/styles/`, then recompile.
 
 ## Score the output
 

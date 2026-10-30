@@ -9,7 +9,7 @@ import { scoreVisual } from './visual.mjs';
 
 export async function generateScoreCard(inputPath, outputDir, options = {}) {
   const htmlPath = join(outputDir, 'index.html');
-  const scssPath = join(outputDir, 'custom.scss');
+  const scssPath = join(outputDir, 'assets', 'styles', 'custom.scss');
 
   const semantic = await scoreSemantics(htmlPath);
   const coverage = await scoreCoverage(htmlPath);
