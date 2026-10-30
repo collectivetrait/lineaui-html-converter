@@ -6,9 +6,13 @@
   "dependencies": {
     "@collectivetrait/lineaui": "latest",
     "@collectivetrait/lineaui-reference": "latest",
+    "browser-sync": "^3.0.0",
     "sass": "^1.80.0"
   },
   "scripts": {
-    "compile": "npx sass assets/styles/styles.scss assets/styles/styles.css --no-source-map"
+    "compile": "npx sass assets/styles/styles.scss assets/styles/styles.css --no-source-map",
+    "watch": "npx sass --watch assets/styles/styles.scss assets/styles/styles.css --no-source-map",
+    "serve": "npx browser-sync start --server --files 'index.html, assets/styles/styles.css, assets/scripts/main.js' --no-open",
+    "dev": "npm run watch & npm run serve"
   }
 }
