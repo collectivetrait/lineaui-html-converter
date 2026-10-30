@@ -276,6 +276,24 @@ Read `score-card.json` and review the per-dimension scores. If any dimension sco
 
 After fixing, recompile and re-score until all available dimensions are at 0.7 or above.
 
+## Start the dev server
+
+After all files are written and compiled, start (or restart) the live-reload server:
+
+```bash
+# Kill any existing dev server
+pkill -f browser-sync 2>/dev/null || true
+
+# Start fresh
+npm run dev &
+```
+
+Wait a moment for the server to start, then display the link:
+
+**Preview: http://localhost:3000**
+
+If port 3000 is in use, browser-sync will pick the next available port — read its output for the actual URL.
+
 ## Completion
 
 Report to the user:
@@ -285,4 +303,4 @@ Report to the user:
 4. Any custom classes that were added, with brief justification for each
 5. Quality scores (per-dimension and overall from score-card.json)
 6. Any areas where the library couldn't match the design exactly
-7. How to view the result: open `index.html` in a browser
+7. **Preview: http://localhost:3000** (or the actual URL from the server output)
