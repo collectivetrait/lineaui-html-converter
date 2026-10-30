@@ -5,7 +5,7 @@
   "description": "Converts visual designs into pixel-perfect Linea UI implementations.",
   "dependencies": {
     "@collectivetrait/lineaui": "latest",
-    "@collectivetrait/lineaui-reference": "file:../ln-reference",
+    "@collectivetrait/lineaui-reference": "latest",
     "sass": "^1.80.0"
   },
   "scripts": {
