@@ -49,7 +49,22 @@ The converter will analyze the design, map components to Linea UI blocks, and pr
 - `assets/styles/styles.css` — compiled stylesheet (generated, do not edit)
 - `assets/scripts/main.js` — interactive behavior (only when needed)
 
-Open `index.html` in a browser to see the result.
+### Previewing the result
+
+Start the dev server for live-reload previewing:
+
+```bash
+npm run dev
+```
+
+This watches SCSS for changes and serves the project with automatic browser refresh. You can also run the pieces individually:
+
+| Script | Description |
+|--------|-------------|
+| `npm run compile` | Compile SCSS to CSS (one-shot) |
+| `npm run watch` | Watch SCSS and recompile on changes |
+| `npm run serve` | Start a live-reload HTTP server |
+| `npm run dev` | Run watch + serve together |
 
 ## How it works
 
