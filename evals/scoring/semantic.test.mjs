@@ -102,6 +102,19 @@ test('detects anchor used as button', async () => {
   teardown();
 });
 
+test('detects icon button without aria-label', async () => {
+  setup();
+  const path = writeHtml('icon-btn.html', `
+    <main>
+      <button><i class="fa-solid fa-trash"></i></button>
+      <button aria-label="Delete"><i class="fa-solid fa-trash"></i></button>
+    </main>
+  `);
+  const result = await scoreSemantics(path);
+  assert.ok(result.interactiveElements.issues.some(i => i.includes('Icon-only')));
+  teardown();
+});
+
 test('detects missing form labels', async () => {
   setup();
   const path = writeHtml('form-labels.html', `

@@ -34,6 +34,7 @@ Write a single HTML fragment to your assigned HTML output path. The fragment con
 - Use the heading level from the brief — do not choose your own
 - Apply Linea UI classes from the reference files
 - Preserve all content (text, links, images) from the brief
+- Add accessibility attributes: `alt` on images, `aria-label` on icon-only buttons, `aria-hidden="true"` on decorative icons, labels on form controls, `aria-label` on `<nav>` when the brief specifies it
 - Do NOT include `<!DOCTYPE>`, `<html>`, `<head>`, or `<body>` — just the section
 
 ### SCSS fragment

@@ -77,6 +77,15 @@ function scoreInteractive(html) {
     }
   }
 
+  const buttonMatches = [...html.matchAll(/<button[\s>][^>]*>(.*?)<\/button>/gis)];
+  for (const match of buttonMatches) {
+    const tag = match[0];
+    const inner = match[1].replace(/<[^>]*>/g, '').trim();
+    if (inner.length === 0 && !/aria-label\s*=/i.test(tag)) {
+      issues.push('Icon-only <button> without aria-label');
+    }
+  }
+
   const score = issues.length === 0 ? 1.0 : Math.max(0, 1.0 - issues.length * 0.2);
   return { issues, score };
 }

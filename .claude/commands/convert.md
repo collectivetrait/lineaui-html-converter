@@ -70,6 +70,20 @@ For elements that don't map to any library block, or whose appearance can't be f
 - If you have zero custom classes on a non-trivial page, you likely missed something or took shortcuts
 - If you have many custom classes, check `classes.md` again — the library probably has a block for it
 
+### 6. Plan accessibility
+
+Review each region and component for accessibility requirements:
+
+- **Images** — every `<img>` needs an `alt` attribute. Decorative images get `alt=""`. Meaningful images get descriptive text.
+- **Icon buttons** — buttons with only an icon and no visible text need `aria-label` describing the action.
+- **Decorative icons** — icons next to text labels get `aria-hidden="true"` to avoid screen reader duplication.
+- **Form controls** — every `<input>`, `<select>`, and `<textarea>` needs a visible `<label>` (linked via `for`/`id`) or an `aria-label`.
+- **Navigation landmarks** — `<nav>` elements need `aria-label` when there are multiple on the page (e.g. `aria-label="Main"`, `aria-label="Footer"`).
+- **Interactive disclosure** — accordions, dropdowns, modals, and drawers need `aria-expanded`, `aria-controls`, and `aria-hidden` on the appropriate elements.
+- **Skip link** — add a `.sr-only` skip link as the first element inside `<body>` that targets `<main>`: `<a href="#main" class="sr-only">Skip to content</a>`, with `id="main"` on `<main>`.
+- **Focus management** — modals and drawers should trap focus when open. Tab order should follow visual order.
+- **Color contrast** — Linea UI tokens are contrast-checked by default. Only verify custom colors meet WCAG AA (4.5:1 for text, 3:1 for large text).
+
 ## Dispatch decision
 
 After analysis, decide whether to use parallel workers or implement directly:
@@ -137,7 +151,9 @@ After all workers complete, read each fragment and check:
 
 4. **HTML validity** — check for unclosed tags, orphaned BEM elements (element class without block parent). Fix in place.
 
-5. **Worker failure** — if a fragment file is missing or empty, implement that section yourself using the brief.
+5. **Accessibility** — verify images have `alt`, icon-only buttons have `aria-label`, decorative icons have `aria-hidden="true"`, form controls have labels, and `<nav>` elements have `aria-label` when multiple exist. Fix in place.
+
+6. **Worker failure** — if a fragment file is missing or empty, implement that section yourself using the brief.
 
 ### 4. Merge and build
 
@@ -192,10 +208,13 @@ Use this path when the page has 3 or fewer regions, or as fallback for any secti
 ### 1. Build the HTML
 
 Create `index.html` in the project root with:
-- `<!DOCTYPE html>`, charset meta, viewport meta
+- `<!DOCTYPE html>`, `lang` attribute on `<html>`, charset meta, viewport meta
 - `<link rel="stylesheet" href="assets/styles/styles.css">` in the head
+- A skip link as the first element in `<body>`: `<a href="#main" class="sr-only">Skip to content</a>`
+- `id="main"` on the `<main>` element
 - Semantic structure following your analysis
 - Linea UI classes from `classes.md`
+- Accessibility attributes from your analysis step 6 (alt text, aria-labels, aria-expanded, etc.)
 - Content preserved from the input
 - `<script src="assets/scripts/main.js"></script>` before `</body>` only if interactions are needed
 
