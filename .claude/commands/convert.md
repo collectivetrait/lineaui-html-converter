@@ -5,229 +5,152 @@ argument-hint: Path to the input file (e.g. input/mockup.html)
 
 # Convert to Linea UI
 
+Always rebuild the page from scratch. Delete any existing output files (`index.html`, `assets/styles/custom.scss`, `assets/styles/styles.css`) before starting. Never reuse output from a previous conversion.
+
 You are converting a visual design into a pixel-perfect implementation using the Linea UI CSS library. The input is the visual spec — how it looks is what matters, not how it's built.
+
+When library usage correctness and pixel-perfect matching conflict, prefer library correctness — but check the compiled CSS against what the reference claims. Several blocks have CSS gaps (see CLAUDE.md "Known block CSS gaps") that require custom overrides on every conversion.
 
 ## Setup
 
-1. Read the three reference files — these are your sole source of library knowledge:
-   - `node_modules/@collectivetrait/lineaui-reference/tokens.md`
-   - `node_modules/@collectivetrait/lineaui-reference/classes.md`
-   - `node_modules/@collectivetrait/lineaui-reference/rules.md`
+Read these files in parallel:
 
-2. Read the input file at: `$ARGUMENTS`
+1. `node_modules/@collectivetrait/lineaui-reference/converter-reference.md` — condensed library reference (blocks, tokens, utilities, rules). This is the sole source of library knowledge. If this file doesn't exist, fall back to reading all three separate files: `tokens.md`, `classes.md`, `rules.md`.
+
+2. `CLAUDE.md` — especially "Known block CSS gaps", "Conversion checklist", and "Library JavaScript".
+
+3. `node_modules/@collectivetrait/lineaui-reference/_gap-overrides.scss` — starter SCSS template. Copy into `assets/styles/custom.scss` as the base, then customize. If missing, write gap overrides manually from CLAUDE.md.
+
+4. `node_modules/@collectivetrait/lineaui-reference/skeleton.html` — starter HTML with head, navbar, section template, and footer. Copy into `index.html`, then customize. If missing, write from scratch.
+
+5. The input file at: `$ARGUMENTS`
    - If no argument was provided, ask the user for the input file path.
 
-3. If the input is an HTML file, render it in the browser (using Claude in Chrome if available) to understand its visual appearance. If browser tools are unavailable, read the HTML and its inline styles to infer the visual intent.
+6. If the input is an HTML file, render it in the browser (using Claude in Chrome if available) to understand its visual appearance. If browser tools are unavailable, read the HTML and its inline styles to infer the visual intent.
 
-## Phase 1: Analysis
+## Source mapping
 
-Work through these steps before writing any output files. Write your analysis as structured thinking.
+Before writing ANY code, produce a JSON map of the source page. Save it as `source-map.json` in the project root. This map drives the entire conversion — use it to construct the output and to make corrections later.
 
-### 1. Understand the visual intent
+### Critical rules (apply to the map AND the build)
 
-Study the input. What does it look like? Ignore the implementation — focus on the visual result: layout, typography, colors, spacing, components.
+**Library blocks first, custom classes last.** For every visual pattern in the source, check the reference for a matching library block BEFORE creating a custom class. A section band is `ln-section`, a card surface is `ln-card`, a grid layout is `ln-grid`, a button is `ln-button`, a data table is `ln-table`, a tab row is `ln-tabs`. Only create a custom class when no library block fits the component's purpose. If you skip this step, the coverage score will fail.
 
-### 2. Decompose into semantic regions
+**No inline styles.** Never copy the source's inline `style="..."` attributes into the output. Move every style to `custom.scss` or replace it with a utility class. The only permitted inline styles are scoped token overrides (`style="--pro: #3F8BD6"`) and values set dynamically by JavaScript at runtime.
 
-Break the page into top-level regions and assign each the correct HTML5 landmark element:
+**Never pre-diagnose coverage.** Do not decide "this page is mostly custom" before checking the reference. Complex pages with charts, data tables, and custom illustrations still use library blocks for their structural patterns.
 
-- Site header with navigation → `<header>` with `<nav>`
-- Primary content → `<main>`
-- Content groups → `<section>` with appropriate headings
-- Complementary content → `<aside>`
-- Site footer → `<footer>`
+**Never delegate without reference reading.** If you fork or dispatch subagents, the agent MUST read the condensed reference file itself and do its own block mapping. Do not pre-decide block mappings in the dispatch prompt.
 
-Determine the heading hierarchy by document relevance — `<h1>` for the page title, `<h2>` for major sections, `<h3>` for subsections. Never choose a heading level for its visual size; use heading utility classes (`.h1`–`.h6`, `.text-display-1`, `.text-display-2`) to adjust appearance independently.
+**Apply all gap overrides for every library block used.** If `ln-navbar` appears in the HTML, the SCSS must include the navbar gap overrides from the template. Same for `ln-site-footer`, `ln-card`, `ln-accordion`, etc.
 
-### 3. Map components to library blocks
+### Map structure
 
-For each visual element within a region, find the best Linea UI block match. Follow this order:
+The JSON map does NOT mirror the DOM tree. It reflects the **document hierarchy**: base definitions first, then top-level regions containing their children. Each node uses this schema:
 
-1. **Semantic fit first** — which block's purpose matches this element's role? A group of navigation links is `ln-menu`, not a styled `<ul>`. A product display is `ln-product-card`, not a custom card.
-2. **Visual fit second** — which modifiers get closest to the design's appearance? Check `classes.md` for every modifier the block offers before considering custom CSS.
-3. **Consult `rules.md`** for composition patterns — many blocks are designed to nest (e.g. `ln-product-card` contains `ln-price` and `ln-swatch`).
-
-### 4. Identify recurring patterns
-
-Look for visual elements that repeat across the page:
-- Card grids, list items, section layouts
-- Repeated spacing or typography patterns
-- Shared color treatments
-
-These should use the same block or custom class, not be styled independently.
-
-### 5. Plan custom CSS
-
-For elements that don't map to any library block, or whose appearance can't be fully achieved with modifiers and utilities:
-
-- Plan a custom class name following the project conventions:
-  - **BEM format** for component-level adjustments (e.g. `hero__backdrop`, `feature-grid__icon`)
-  - **Utility/helper format** (bare unprefixed) for general-purpose adjustments
-- Note which Linea UI tokens to use in the custom CSS (`var(--s3)`, `var(--primary)`, etc.)
-- Never hardcode a value that a token covers
-
-**Red flags to check:**
-- If you have zero custom classes on a non-trivial page, you likely missed something or took shortcuts
-- If you have many custom classes, check `classes.md` again — the library probably has a block for it
-
-### 6. Plan accessibility
-
-Review each region and component for accessibility requirements:
-
-- **Images** — every `<img>` needs an `alt` attribute. Decorative images get `alt=""`. Meaningful images get descriptive text.
-- **Icon buttons** — buttons with only an icon and no visible text need `aria-label` describing the action.
-- **Decorative icons** — icons next to text labels get `aria-hidden="true"` to avoid screen reader duplication.
-- **Form controls** — every `<input>`, `<select>`, and `<textarea>` needs a visible `<label>` (linked via `for`/`id`) or an `aria-label`.
-- **Navigation landmarks** — `<nav>` elements need `aria-label` when there are multiple on the page (e.g. `aria-label="Main"`, `aria-label="Footer"`).
-- **Interactive disclosure** — accordions, dropdowns, modals, and drawers need `aria-expanded`, `aria-controls`, and `aria-hidden` on the appropriate elements.
-- **Skip link** — add a `.sr-only` skip link as the first element inside `<body>` that targets `<main>`: `<a href="#main" class="sr-only">Skip to content</a>`, with `id="main"` on `<main>`.
-- **Focus management** — modals and drawers should trap focus when open. Tab order should follow visual order.
-- **Color contrast** — Linea UI tokens are contrast-checked by default. Only verify custom colors meet WCAG AA (4.5:1 for text, 3:1 for large text).
-
-## Dispatch decision
-
-After analysis, decide whether to use parallel workers or implement directly:
-
-- **4 or more top-level semantic regions** → use coordinator mode (dispatch section workers)
-- **3 or fewer regions** → implement directly (single-agent mode, skip to Phase 2)
-
----
-
-## Coordinator mode (parallel dispatch)
-
-Use this path when the page has 4+ regions.
-
-### 1. Prepare section briefs
-
-Group the regions into up to 3 batches (e.g. "header + navbar", "main content sections", "footer"). For each batch, create a brief file at `.converter-tmp/section-{n}-brief.md` following this structure:
-
-```markdown
-# Section Brief: {section_name}
-
-## Region
-{description of the semantic region(s) this section covers}
-
-## HTML structure
-- Root element: `<{element}>`
-- Heading level: `<h{n}>` for the section title (if applicable)
-
-## Linea UI blocks
-{list of blocks to use, from your analysis step 3}
-
-## Shared patterns
-{decisions that apply across ALL sections — workers must follow these exactly}
-
-## Custom classes
-{pre-assigned custom class names for this section — workers use these, don't invent new ones}
-
-## Content
-{the actual text, images, and links to preserve from the input}
+```json
+{
+  "base": {
+    "theme": "light | dark",
+    "fonts": {
+      "<role>": { "family": "...", "weights": [400, 700], "source": "google | system" }
+    },
+    "colors": {
+      "<token-name>": "<value>"
+    },
+    "radius": "<default border-radius>",
+    "containerWidth": "<max-width>"
+  },
+  "sections": [
+    {
+      "id": "<suggested-html-id>",
+      "tag": "<suggested-semantic-element>",
+      "purpose": "<what this region does>",
+      "description": "<visual summary: layout, density, character>",
+      "appearance": {
+        "spacing": { "paddingBlock": "...", "gap": "...", "margins": "..." },
+        "background": "<color or gradient>",
+        "text": { "color": "...", "fontSize": "...", "lineHeight": "...", "fontWeight": "..." },
+        "font": "<family if different from base>"
+      },
+      "libraryBlock": "<ln-* block name> | null",
+      "libraryModifiers": ["--modifier-1"],
+      "noLibraryMatch": "<reason, only when libraryBlock is null>",
+      "children": [
+        {
+          "id": "...",
+          "tag": "...",
+          "purpose": "...",
+          "description": "...",
+          "appearance": { "..." },
+          "libraryBlock": "...",
+          "libraryModifiers": [],
+          "children": []
+        }
+      ],
+      "media": [
+        {
+          "type": "image | svg | icon",
+          "src": "<original src or inline>",
+          "dimensions": { "width": "...", "height": "..." },
+          "appearance": "<shape, color, fit, decorative vs content>"
+        }
+      ]
+    }
+  ]
+}
 ```
 
-**Critical:** The coordinator decides ALL heading levels, ALL custom class names, and ALL shared pattern choices upfront. Workers execute, they don't decide.
+**Rules for the map:**
+- When `libraryBlock` is `null`, set `noLibraryMatch` with the reason and **omit `children`** — the converter will handle these as fully custom components.
+- Include every image, SVG, and icon element under the `media` array of its parent section, with dimensions and a short appearance note.
+- `id` values must be English, semantic, and readable (same naming rules as class names).
+- Check the reference for EVERY component before setting `libraryBlock` to `null`.
+- The map is the single source of truth for block assignments — the build phase must follow it.
 
-### 2. Dispatch workers
+### Navbar decisions (record in the map):
+- `--collapse` always; `--actions-visible` only when source keeps CTA visible on mobile; `--center` only when source centers nav links
+- `--transparent` when source navbar has no background
+- Google Fonts `<link>` in `<head>` for all font families (the library declares font-family tokens but does NOT load font files)
+- Brand gap: check source and add `gap: var(--s1)` or appropriate value
+- Active link styling scoped to desktop only (`@media (min-width: 768px)`)
+- Custom heading classes using `--f-prose` need `letter-spacing: normal` (library base applies `-0.005em`)
 
-Create the temp directory and dispatch up to 3 `section-worker` agents **in parallel** (all Agent calls in one message):
+### Footer decisions (record in the map):
+- Responsive stacking behavior (row → column at mobile)
+- Mobile padding and alignment changes
+- `ln-site-footer` line-height override when source uses 24px
+- Footer link text-decoration
 
-```bash
-mkdir -p .converter-tmp
-```
+## Build
 
-Each agent's prompt must include:
-- Brief file path: `.converter-tmp/section-{n}-brief.md`
-- HTML output path: `.converter-tmp/section-{n}.html`
-- SCSS output path: `.converter-tmp/section-{n}.scss`
+Build the output files using `source-map.json` as the blueprint. Every block assignment, ID, and tag in the map carries over to the code — do not re-decide them.
 
-### 3. Review fragments
+### 1. HTML
 
-After all workers complete, read each fragment and check:
+Start from `skeleton.html` (already copied in setup). Customize:
+- Page title
+- Google Fonts families and weights to match source
+- Brand name, logo/icon, and `__brand` gap
+- Nav links (names, active state, href)
+- Navbar modifiers (`--transparent`, `--collapse`, `--actions-visible`, `--center`)
+- CTA button in `__actions` (or remove if source hides it on desktop)
+- Panel links (duplicate nav links + CTA for mobile)
+- Add content sections inside `<main>` using the `ln-section` template
+- Footer brand and legal text
+- Accessibility attributes (alt, aria-labels, aria-current)
 
-1. **Heading hierarchy** — scan all HTML fragments in section order for `<h1>`–`<h6>`. Verify no skipped levels, exactly one `<h1>`, and logical nesting. Fix heading levels in the fragments if needed and note any changes in the completion report.
-
-2. **Custom class deduplication** — collect all class names from the SCSS fragments. If two workers defined the same class with different rules, merge or rename.
-
-3. **Pattern consistency** — verify each fragment used the blocks and modifiers specified in its brief. If a worker deviated (used `ln-list` when the brief said `ln-card`), correct the fragment.
-
-4. **HTML validity** — check for unclosed tags, orphaned BEM elements (element class without block parent). Fix in place.
-
-5. **Accessibility** — verify images have `alt`, icon-only buttons have `aria-label`, decorative icons have `aria-hidden="true"`, form controls have labels, and `<nav>` elements have `aria-label` when multiple exist. Fix in place.
-
-6. **Worker failure** — if a fragment file is missing or empty, implement that section yourself using the brief.
-
-### 4. Merge and build
-
-1. **Assemble `index.html`:**
-   ```html
-   <!DOCTYPE html>
-   <html lang="en">
-   <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>{page title from input}</title>
-     <link rel="stylesheet" href="assets/styles/styles.css">
-   </head>
-   <body>
-     {section-1.html content}
-     {section-2.html content}
-     {section-3.html content}
-     <script src="assets/scripts/main.js"></script> <!-- only if needed -->
-   </body>
-   </html>
-   ```
-
-2. **Assemble `assets/styles/custom.scss`:** concatenate all SCSS fragments with a section comment between each:
-   ```scss
-   // --- Section 1: {name} ---
-   {section-1.scss content}
-
-   // --- Section 2: {name} ---
-   {section-2.scss content}
-   ```
-
-3. **Create `assets/styles/styles.scss`:**
-   ```scss
-   @use '../../node_modules/@collectivetrait/lineaui/scss' as *;
-   @use 'custom';
-   ```
-
-4. **Compile:** run `npm run compile`. Fix any SCSS errors and retry.
-
-5. **Create JS if needed:** if the input has interactive behavior (dropdowns, modals, tabs, accordions, mobile navigation), create `assets/scripts/main.js`. Workers don't handle JS — this is the coordinator's responsibility.
-
-6. **Clean up:** remove `.converter-tmp/` directory.
-
-Then skip to the Visual comparison step below.
-
----
-
-## Single-agent mode (direct implementation)
-
-Use this path when the page has 3 or fewer regions, or as fallback for any section a worker failed on.
-
-### 1. Build the HTML
-
-Create `index.html` in the project root with:
-- `<!DOCTYPE html>`, `lang` attribute on `<html>`, charset meta, viewport meta
-- `<link rel="stylesheet" href="assets/styles/styles.css">` in the head
-- A skip link as the first element in `<body>`: `<a href="#main" class="sr-only">Skip to content</a>`
-- `id="main"` on the `<main>` element
-- Semantic structure following your analysis
-- Linea UI classes from `classes.md`
-- Accessibility attributes from your analysis step 6 (alt text, aria-labels, aria-expanded, etc.)
-- Content preserved from the input
-- `<script src="assets/scripts/main.js"></script>` before `</body>` only if interactions are needed
-
-### 2. Write custom SCSS
+### 2. SCSS
 
 Create `assets/styles/custom.scss`:
-- If custom styles are needed, define them using Linea UI tokens for all values
-- If no custom CSS is needed, write the file with a comment explaining why:
-  ```scss
-  // No custom styles needed — all visual patterns covered by Linea UI classes.
-  ```
+- Start from the gap-overrides template (copy `_gap-overrides.scss`)
+- Prepend `:root` token overrides (fonts, colors, radius, custom tokens)
+- Customize gap override values to match source (navbar height, gaps, etc.)
+- Add gap overrides for EVERY library block used in the HTML
+- Add section-specific custom styles using Linea UI tokens
+- Move ALL source inline styles to SCSS rules or utility classes — no `style="..."` copying
 
-### 3. Create the import file
+### 3. Import file
 
 Create `assets/styles/styles.scss`:
 ```scss
@@ -237,70 +160,97 @@ Create `assets/styles/styles.scss`:
 
 ### 4. Compile
 
-Run:
 ```bash
 npm run compile
 ```
 
-If compilation fails, fix the SCSS errors and retry until it succeeds.
+Fix SCSS errors and retry until it succeeds.
 
-### 5. Create JS if needed
+### 5. JS
 
-If the input has interactive behavior (dropdowns, modals, tabs, accordions, mobile navigation), create `assets/scripts/main.js` with the minimal JavaScript needed. Use the library's `data-ln-*` attributes and initialization patterns where they exist.
+Always include the library's pre-compiled bundle:
+```html
+<script src="node_modules/@collectivetrait/lineaui/dist/bundle.js" defer></script>
+```
+This handles navbar toggle, collapse resize, escape/click-outside, and more. Accordions use native `<details>` — no JS needed.
 
----
+If the source has page-specific JS (charts, data rendering, interactive filters), preserve it in `assets/scripts/main.js` as a separate `defer` script. Do not inline it. The library bundle and page JS coexist without conflict.
 
 ## Visual comparison
 
-If browser tools are available, open both the input and `index.html` side by side. Compare:
-- Layout structure and alignment
-- Typography sizes and weights
-- Colors and backgrounds
-- Spacing and gaps
-- Component appearance
+**Mandatory.** Use `getComputedStyle` on BOTH input and output pages to compare properties.
 
-Fix any discrepancies by adjusting classes or custom SCSS in `assets/styles/`, then recompile.
+### Batched comparison
 
-## Score the output
+Run **one** comprehensive `javascript_tool` call per page that returns all properties for all regions at once. Do NOT make separate calls per region. Structure:
 
-Run the quality scoring pipeline:
+```js
+// Run on BOTH source and output tabs
+const g = el => getComputedStyle(el);
+const $ = s => document.querySelector(s);
+const pick = (el, props) => {
+  if (!el) return null;
+  const s = g(el);
+  const r = {};
+  props.forEach(p => r[p] = s[p]);
+  return r;
+};
+const std = ['padding','gap','height','minHeight','fontSize','lineHeight','fontWeight','fontFamily','letterSpacing','color','backgroundColor','boxShadow'];
+const result = {};
+// Add one entry per element — adapt selectors to source vs output
+result.navbar = pick($('.ln-navbar__inner'), std);
+result.brand = pick($('.ln-navbar__brand'), ['fontFamily','fontSize','fontWeight','gap']);
+// ... all regions
+JSON.stringify(result, null, 2);
+```
+
+Compare values between source and output. Fix every discrepancy in `custom.scss`, recompile, and re-verify with one more batched call. **Update `source-map.json`** if any block assignments or appearance values change during correction.
+
+### Properties to compare
+
+For each region (navbar, hero, cards, tables, footer):
+- `margin`, `padding`, `gap`
+- `height`, `min-height`
+- `font-size`, `line-height`, `font-weight`, `letter-spacing`, `font-family`
+- `color`, `background-color`, `box-shadow`, `text-decoration`
+- At mobile: `flex-direction`, `align-items`, `justify-content`, section `padding-block`
+
+**Query by exact library class** (`.ln-navbar`), never generic tags.
+
+## Score
 
 ```bash
 node evals/scoring/score-card.mjs . $ARGUMENTS
 ```
 
-Read `score-card.json` and review the per-dimension scores. If any dimension scores below 0.7, review the output and fix before reporting:
-- **Semantic < 0.7**: check landmark elements and heading hierarchy
-- **Coverage < 0.7**: check for utility-only compositions that should use library blocks
-- **CSS Ratio < 0.7**: check naming conventions and whether custom CSS duplicates library functionality
+Fix any dimension below 0.7, recompile, re-score.
 
-After fixing, recompile and re-score until all available dimensions are at 0.7 or above.
+## Audit spacing
 
-## Start the dev server
+Run via `javascript_tool` on the output page:
 
-After all files are written and compiled, start (or restart) the live-reload server:
+```js
+const code = await fetch('/evals/scoring/audit-spacing.js').then(r=>r.text());
+JSON.parse(eval(code))
+```
+
+Fix every issue.
+
+## Dev server
 
 ```bash
-# Kill any existing dev server
 pkill -f browser-sync 2>/dev/null || true
-
-# Start fresh
 npm run dev &
 ```
 
-Wait a moment for the server to start, then display the link:
-
-**Preview: http://localhost:3000**
-
-If port 3000 is in use, browser-sync will pick the next available port — read its output for the actual URL.
+**Preview: http://localhost:3000** (or actual port from output)
 
 ## Completion
 
-Report to the user:
-1. What files were created
-2. Which mode was used (coordinator with N workers, or single-agent)
-3. Which Linea UI blocks were used and why
-4. Any custom classes that were added, with brief justification for each
-5. Quality scores (per-dimension and overall from score-card.json)
-6. Any areas where the library couldn't match the design exactly
-7. **Preview: http://localhost:3000** (or the actual URL from the server output)
+Report:
+1. Files created
+2. Linea UI blocks used and why
+3. Custom classes added with justification
+4. Quality scores
+5. Areas where the library couldn't match exactly
+6. Preview URL
