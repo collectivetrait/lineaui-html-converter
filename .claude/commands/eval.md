@@ -29,19 +29,19 @@ Run `/convert` on the fixture's input:
 /convert evals/fixtures/{name}/input.html
 ```
 
-This produces `index.html`, `custom.scss`, `styles.scss`, `styles.css` in the project root.
+This produces `index.html`, `custom.scss`, `styles.scss`, `styles.css` in the `output/` directory.
 
 ### b. Score
 
 Run the scoring pipeline:
 
 ```bash
-node evals/scoring/score-card.mjs . evals/fixtures/{name}/input.html
+node evals/scoring/score-card.mjs output evals/fixtures/{name}/input.html
 ```
 
 ### c. Compare against baseline
 
-Read `score-card.json` from the project root.
+Read `output/score-card.json`.
 
 If `evals/fixtures/{name}/baseline-scores.json` exists:
 - Compare each dimension's `overall` score against the baseline
@@ -49,7 +49,7 @@ If `evals/fixtures/{name}/baseline-scores.json` exists:
 - Record: fixture name, dimension, baseline score, new score, delta
 
 If no baseline exists:
-- Copy `score-card.json` to `evals/fixtures/{name}/baseline-scores.json`
+- Copy `output/score-card.json` to `evals/fixtures/{name}/baseline-scores.json`
 - Record: fixture name, "new baseline created"
 
 ### d. Clean up

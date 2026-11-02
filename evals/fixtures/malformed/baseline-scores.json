@@ -1,0 +1,75 @@
+{
+  "timestamp": "2026-11-02T05:01:47.114Z",
+  "input": "evals/fixtures/malformed/input.html",
+  "scores": {
+    "semantic": {
+      "dimension": "semantic",
+      "landmarks": {
+        "found": [
+          "header",
+          "main",
+          "footer",
+          "nav",
+          "section"
+        ],
+        "missing": [
+          "aside"
+        ],
+        "score": 0.8333333333333334
+      },
+      "headings": {
+        "hierarchy": [
+          "h1",
+          "h3",
+          "h3",
+          "h3"
+        ],
+        "skipped": true,
+        "multipleH1": false,
+        "score": 0.6
+      },
+      "interactiveElements": {
+        "issues": [],
+        "score": 1
+      },
+      "images": {
+        "total": 0,
+        "missingAlt": 0,
+        "score": 1
+      },
+      "forms": {
+        "total": 0,
+        "missingLabel": 0,
+        "score": 1
+      },
+      "overall": 0.89
+    },
+    "coverage": {
+      "dimension": "coverage",
+      "lnBlockCount": 4,
+      "customClassCount": 4,
+      "inlineStyleCount": 0,
+      "utilityOnlyCompositions": [],
+      "orphanedBemElements": [],
+      "utilityLikeSelectors": [],
+      "ratio": 0.5,
+      "overall": 1
+    },
+    "css_ratio": {
+      "dimension": "css_ratio",
+      "customLines": 117,
+      "htmlElements": 45,
+      "linesPerElement": 2.6,
+      "namingIssues": [],
+      "zeroCustom": false,
+      "overall": 0.8
+    },
+    "visual": {
+      "dimension": "visual",
+      "method": "skipped",
+      "notes": "No browser tools available — visual fidelity not scored. Open both files in a browser to compare manually.",
+      "overall": null
+    }
+  },
+  "overall": 0.9
+}

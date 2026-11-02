@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><!-- PAGE TITLE --></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- GOOGLE FONTS: customize families and weights to match source -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/styles/styles.css">
+</head>
+<body>
+<a href="#main" class="sr-only">Skip to content</a>
+
+<!-- NAVBAR: add/remove --transparent, --collapse, --actions-visible, --center as needed -->
+<header>
+  <nav class="ln-navbar ln-navbar--transparent ln-navbar--collapse" aria-label="Main">
+    <div class="ln-navbar__inner">
+      <a href="#" class="ln-navbar__brand">
+        <!-- BRAND: logo/icon + name -->
+        Brand Name
+      </a>
+      <div class="ln-navbar__nav">
+        <!-- NAV LINKS: plain <a>, not <ul>/<li> -->
+        <a href="#" class="ln-navbar__link">Link 1</a>
+        <a href="#" class="ln-navbar__link">Link 2</a>
+        <a href="#" class="ln-navbar__link active-link" aria-current="page">Active Link</a>
+      </div>
+      <div class="ln-navbar__actions">
+        <!-- CTA: customize class (navbar-sign-in, ln-button, etc.) -->
+        <a href="#" class="navbar-sign-in">Sign in</a>
+      </div>
+      <button class="ln-navbar__toggle" type="button" data-ln-navbar-toggle aria-expanded="false" aria-label="Toggle menu">
+        <i class="fa-solid fa-bars ln-navbar__toggle-open" aria-hidden="true"></i>
+        <i class="fa-solid fa-xmark ln-navbar__toggle-close" aria-hidden="true"></i>
+      </button>
+    </div>
+    <!-- PANEL: duplicate nav links + CTA for mobile; remove if using --actions-visible -->
+    <div class="ln-navbar__panel" aria-hidden="true">
+      <a href="#" class="ln-navbar__link">Link 1</a>
+      <a href="#" class="ln-navbar__link">Link 2</a>
+      <a href="#" class="ln-navbar__link">Active Link</a>
+      <a href="#" class="ln-navbar__link">Sign in</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+  <!-- SECTIONS: copy and adapt this pattern for each content section -->
+  <!-- Modifiers: py-0 (custom padding), --wide (1200px), --space-lg/xl/2xl/3xl, --surface-sunken/raised/inverse, --center -->
+  <section class="ln-section ln-section--space-2xl ln-section--wide">
+    <div class="ln-section__inner">
+      <!-- Section content here -->
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER: customize brand and legal text; responsive utilities handle mobile stacking -->
+<footer class="ln-site-footer border-sh-t">
+  <div class="ln-site-footer__inner d-flex align-items-center justify-content-between gap-3 flex-wrap footer-inner flex-column flex-row@md align-items-start align-items-center@md gap-0 gap-3@md">
+    <span class="footer-brand">Brand Name</span>
+    <span class="footer-legal text-body-sm text-muted">[Company] &middot; <a href="#">Terms</a> &middot; <a href="#">Privacy</a></span>
+  </div>
+</footer>
+
+<script src="node_modules/@collectivetrait/lineaui/dist/bundle.js" defer></script>
+</body>
+</html>

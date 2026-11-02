@@ -1,6 +1,6 @@
 ---
 description: Run quality scoring on the current converter output
-argument-hint: (none — scores index.html and custom.scss in the project root)
+argument-hint: (none — scores output/index.html and output/assets/styles/custom.scss)
 ---
 
 # Score Converter Output
@@ -9,17 +9,17 @@ Run the four-dimension quality scoring pipeline on the current output.
 
 ## Steps
 
-1. Verify `index.html` exists in the project root. If not, tell the user to run `/convert` first.
+1. Verify `output/index.html` exists. If not, tell the user to run `/convert` first.
 
 2. Run the scoring pipeline:
 
 ```bash
-node evals/scoring/score-card.mjs . input/source.html
+node evals/scoring/score-card.mjs output input/source.html
 ```
 
 If the input file path is different, adjust the second argument. If the user provides the input path as $ARGUMENTS, use that.
 
-3. Read `score-card.json` from the project root.
+3. Read `output/score-card.json`.
 
 4. Present results as a table:
 
@@ -37,4 +37,4 @@ Mark any dimension below 0.7 as "Needs attention" and explain what the low score
 - **CSS Ratio < 0.7**: Naming convention violations or excessive custom CSS relative to HTML complexity
 - **Visual**: Only scored when browser tools are available
 
-5. If visual fidelity was skipped, note: "Visual fidelity was not scored — open both the input and index.html in a browser to compare manually."
+5. If visual fidelity was skipped, note: "Visual fidelity was not scored — open both the input and output/index.html in a browser to compare manually."

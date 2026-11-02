@@ -1,0 +1,114 @@
+// ===========================================
+// Base overrides
+// ===========================================
+body {
+  line-height: 1.5rem; // library reset sets 1rem (16px)
+}
+
+// ===========================================
+// Navbar gap overrides
+// ===========================================
+.ln-navbar__inner {
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  height: calc(3 * var(--s3)); // customize: match source navbar height
+  gap: var(--s4); // customize: match source navbar gap
+}
+
+.ln-navbar__toggle {
+  padding: 0;
+  width: 2.5rem; // customize: match source toggle size
+  height: 2.5rem;
+  border-radius: var(--r-sm); // customize: match source toggle radius
+  box-shadow: inset 0 0 0 1px var(--text); // no border by default
+}
+
+.ln-navbar__toggle[aria-expanded="true"] .ln-navbar__toggle-open {
+  display: none;
+}
+
+.ln-navbar__toggle:not([aria-expanded="true"]) .ln-navbar__toggle-close {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .ln-navbar__nav {
+    flex: none; // default flex:1 fills all space
+    align-self: stretch;
+    gap: var(--s4); // customize: match source nav gap
+    margin-left: auto; // right-align links
+  }
+
+  .ln-navbar__link {
+    padding: 0; // customize: match source link padding
+    font-size: 1rem; // customize: match source link font-size
+    font-weight: 500; // customize: match source link weight
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    box-shadow: none;
+    transition: color var(--dur-fast) var(--e-standard), box-shadow var(--dur-fast) var(--e-standard);
+
+    &:hover {
+      color: var(--text); // customize: match source hover color
+      box-shadow: inset 0 -2px 0 var(--text); // customize: match source hover underline
+    }
+  }
+
+  .ln-navbar__actions {
+    margin-left: 0; // default auto pushes it away from nav
+  }
+
+  .ln-navbar__panel {
+    display: none !important; // library bug: panel stays visible after mobile toggle + resize
+  }
+}
+
+// ===========================================
+// Card gap overrides
+// ===========================================
+.ln-card > * {
+  margin: 0; // strip child margins inside flex/grid cards
+}
+
+// ===========================================
+// Accordion gap overrides
+// ===========================================
+// Scope these under a parent class (e.g. .faq-inner) to avoid global overrides.
+// .your-scope .ln-accordion__item:first-child {
+//   border-top: 0; // remove when source has no top border on first item
+// }
+
+// .your-scope .ln-accordion__summary {
+//   padding: 1.5rem 0 calc(1.5rem - 1px); // customize: absorb 1px border in bottom padding
+//   justify-content: space-between; // no default; push trailing icon right
+// }
+
+// .your-scope .ln-accordion__icon {
+//   color: var(--c-muted); // default inherits --text
+//   flex-shrink: 0;
+// }
+
+// ===========================================
+// Footer gap overrides
+// ===========================================
+.ln-site-footer {
+  line-height: 1.5rem; // default is 2rem (32px); customize if source differs
+}
+
+.ln-site-footer__inner {
+  margin-inline: auto; // no centering by default
+  padding-inline: var(--gutter); // no gutter by default
+}
+
+// ===========================================
+// Section mobile padding override
+// ===========================================
+// --space-2xl reduces from 96px to 48px at mobile.
+// Add this when the source keeps 96px at all viewports.
+@media (max-width: 767.98px) {
+  .ln-section.ln-section--space-2xl {
+    padding-block: 6rem;
+  }
+}

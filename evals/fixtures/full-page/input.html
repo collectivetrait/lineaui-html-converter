@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Full Page Mockup</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; color: #1a1a1a; background: #fafafa; }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 48px;
+      background: white;
+      border-bottom: 1px solid #e5e5e5;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar .brand { font-weight: 700; font-size: 16px; text-decoration: none; color: #1a1a1a; }
+    .navbar .nav-links { display: flex; gap: 24px; }
+    .navbar .nav-links a { text-decoration: none; color: #666; font-size: 14px; }
+    .navbar .nav-links a:hover { color: #1a1a1a; }
+    .navbar .cta-btn {
+      background: #7C3AED;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 96px 32px;
+      background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+    }
+    .hero .title {
+      font-size: 56px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      line-height: 1.1;
+    }
+    .hero .subtitle {
+      font-size: 18px;
+      color: #666;
+      max-width: 600px;
+      margin: 0 auto 32px;
+      line-height: 1.5;
+    }
+    .hero .hero-btn {
+      display: inline-block;
+      background: #7C3AED;
+      color: white;
+      padding: 12px 32px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .cards-section {
+      padding: 64px 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .cards-section .section-title {
+      font-size: 32px;
+      font-weight: 400;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .cards-section .section-subtitle {
+      font-size: 16px;
+      color: #666;
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+    .card .card-body { padding: 24px; }
+    .card .card-body .eyebrow {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #999;
+      font-family: monospace;
+      margin-bottom: 4px;
+    }
+    .card .card-body .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .card .card-body .card-title a { text-decoration: none; color: inherit; }
+    .card .card-body .card-desc {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .features {
+      padding: 64px 32px;
+      background: #f5f5f5;
+    }
+    .features .features-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+    }
+    .feature-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .feature-item .icon-box {
+      width: 40px;
+      height: 40px;
+      background: #ede9fe;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+    .feature-item .feature-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .feature-item .feature-desc { font-size: 14px; color: #666; line-height: 1.5; }
+
+    .site-footer {
+      padding: 48px 32px;
+      border-top: 1px solid #e5e5e5;
+    }
+    .site-footer .footer-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 32px;
+    }
+    .footer-brand { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+    .footer-desc { font-size: 14px; color: #666; line-height: 1.5; }
+    .footer-heading { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #999; margin-bottom: 12px; font-family: monospace; }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 8px; }
+    .footer-links a { text-decoration: none; color: #666; font-size: 14px; }
+    .footer-links a:hover { color: #1a1a1a; }
+    .copyright {
+      max-width: 960px;
+      margin: 24px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid #e5e5e5;
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* Intentional third-party class to test framework ignorance */
+    .btn.btn-primary { background: #0d6efd; color: white; padding: 8px 16px; border: none; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <a href="#" class="brand">Northwind</a>
+    <div class="nav-links">
+      <a href="#">Features</a>
+      <a href="#">Pricing</a>
+      <a href="#">Docs</a>
+      <a href="#">Blog</a>
+    </div>
+    <button class="cta-btn">Get Started</button>
+  </div>
+
+  <div class="hero">
+    <div class="title">Ship faster with less friction</div>
+    <div class="subtitle">
+      The developer platform that gets out of your way. Build, deploy, and
+      scale without the usual headaches.
+    </div>
+    <a href="#" class="hero-btn">Start free trial</a>
+  </div>
+
+  <div class="cards-section">
+    <div class="section-title">What we offer</div>
+    <div class="section-subtitle">Everything you need to build modern applications.</div>
+    <div class="card-grid">
+      <div class="card">
+        <img src="https://picsum.photos/seed/card1/600/400" alt="Cloud infrastructure">
+        <div class="card-body">
+          <div class="eyebrow">Infrastructure</div>
+          <div class="card-title"><a href="#">Cloud Hosting</a></div>
+          <div class="card-desc">Deploy to any region in seconds. Auto-scaling, load balancing, and SSL included.</div>
+        </div>
+      </div>
+      <div class="card">
+        <img src="https://picsum.photos/seed/card2/600/400" alt="Database">
+        <div class="card-body">
+          <div class="eyebrow">Storage</div>
+          <div class="card-title"><a href="#">Managed Database</a></div>
+          <div class="card-desc">PostgreSQL, Redis, and S3-compatible storage with automatic backups and failover.</div>
+        </div>
+      </div>
+      <div class="card">
+        <img src="https://picsum.photos/seed/card3/600/400" alt="Analytics">
+        <div class="card-body">
+          <div class="eyebrow">Insights</div>
+          <div class="card-title"><a href="#">Real-time Analytics</a></div>
+          <div class="card-desc">Monitor performance, track errors, and understand user behavior in real time.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="features-inner">
+      <div class="feature-item">
+        <div class="icon-box">⚡</div>
+        <div>
+          <div class="feature-title">Instant Deploys</div>
+          <div class="feature-desc">Push to Git and your changes are live in seconds. Zero-downtime deployments every time.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="icon-box">🔒</div>
+        <div>
+          <div class="feature-title">Built-in Security</div>
+          <div class="feature-desc">DDoS protection, WAF, and automatic SSL certificates. Security without configuration.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="icon-box">📊</div>
+        <div>
+          <div class="feature-title">Observability</div>
+          <div class="feature-desc">Logs, metrics, and traces in one place. Debug issues before your users notice them.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="icon-box">🔄</div>
+        <div>
+          <div class="feature-title">CI/CD Pipelines</div>
+          <div class="feature-desc">Automated testing and deployment pipelines that work with your existing workflow.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">Northwind</div>
+        <div class="footer-desc">The developer platform that gets out of your way.</div>
+      </div>
+      <div>
+        <div class="footer-heading">Product</div>
+        <ul class="footer-links">
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Roadmap</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Legal</div>
+        <ul class="footer-links">
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Cookies</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copyright">&copy; 2026 Northwind Inc. All rights reserved.</div>
+  </div>
+
+  <!-- Third-party class test: this button uses Bootstrap classes -->
+  <div style="display:none;">
+    <button class="btn btn-primary">Hidden bootstrap button</button>
+  </div>
+</body>
+</html>

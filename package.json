@@ -10,9 +10,9 @@
     "sass": "^1.80.0"
   },
   "scripts": {
-    "compile": "npx sass assets/styles/styles.scss assets/styles/styles.css --no-source-map",
-    "watch": "npx sass --watch assets/styles/styles.scss assets/styles/styles.css --no-source-map",
-    "serve": "npx browser-sync start --server --files 'index.html, assets/styles/styles.css, assets/scripts/main.js' --no-open",
+    "compile": "npx sass output/assets/styles/styles.scss output/assets/styles/styles.css --no-source-map",
+    "watch": "npx sass --watch output/assets/styles/styles.scss output/assets/styles/styles.css --no-source-map",
+    "serve": "npx browser-sync start --server 'output' --files 'output/index.html, output/assets/styles/styles.css, output/assets/scripts/main.js' --no-open",
     "dev": "npm run watch & npm run serve"
   }
 }
