@@ -1,12 +1,12 @@
 # Linea UI HTML Converter
 
-An AI-powered tool that converts visual HTML mockups into pixel-perfect implementations using the [Linea UI](https://github.com/collectivetrait/lineaui) CSS library. It analyzes a design, maps visual patterns to the correct library components, and produces semantic HTML with proper class usage and minimal custom CSS.
+An AI-powered tool that converts visual HTML mockups into pixel-perfect implementations using the [Linea UI](https://github.com/collectivetrait/lineaui) SCSS library. It analyzes a design, maps visual patterns to the correct library components, and produces semantic HTML with proper class usage and minimal custom CSS.
 
 This tool runs inside [Claude Code](https://docs.anthropic.com/en/docs/claude-code) as a set of slash commands.
 
 ## Related projects
 
-- [Linea UI](https://github.com/collectivetrait/lineaui) — the CSS component library
+- [Linea UI](https://github.com/collectivetrait/lineaui) — the SCSS component library
 - [Linea UI Docs](https://lineaui.com) — documentation site for human reference
 - [Linea UI Reference](https://www.npmjs.com/package/@collectivetrait/lineaui-reference) — machine-readable API reference for agents
 
